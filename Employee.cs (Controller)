@@ -1,0 +1,97 @@
+namespace ModelViewController.Controllers
+{
+    
+    public class EmployeeController : Controller
+    {
+        UsersContext objUsersContext = new UsersContext();
+
+        [HttpGet]
+        public ActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult Create(EmployeeModel objEmployeeModel)
+        {
+            if (ModelState.IsValid)
+            {
+                objUsersContext.Employees.Add(objEmployeeModel);
+                objUsersContext.SaveChanges();
+                return RedirectToAction("Create");
+            }
+
+            return View(objEmployeeModel);
+        }
+
+        [HttpGet]
+        public ActionResult GetEmployee()
+        {
+            List<EmployeeModel> objEmployees = objUsersContext.Employees.ToList();
+            return View(objEmployees);
+        }
+
+        [HttpGet]
+        public ActionResult Edit(int id)
+        {
+            EmployeeModel objEmployees = objUsersContext.Employees.Single(p => p.EmployeeId == id);
+
+            if (objEmployees == null)
+            {
+                return HttpNotFound();
+            }
+
+            return View(objEmployees);
+        }
+
+        [HttpPost]
+        public ActionResult Edit(EmployeeModel objEmployeeModel)
+        {
+            if (ModelState.IsValid)
+            {
+                objUsersContext.Entry(objEmployeeModel).State = EntityState.Modified;
+                objUsersContext.SaveChanges();
+                return RedirectToAction("GetEmployee");
+            }
+
+            return View(objEmployeeModel);
+        }
+
+        [HttpGet]
+        public ActionResult Delete(int id)
+        {
+            EmployeeModel objEmployees = objUsersContext.Employees.Single(p => p.EmployeeId == id);
+
+            if (objEmployees == null)
+            {
+                return HttpNotFound();
+            }
+
+            return View(objEmployees);
+        }
+
+        [HttpPost]
+        public ActionResult Delete(int id, EmployeeModel objEmployees)
+        {
+            EmployeeModel _objEmployees = objUsersContext.Employees.Single(p => p.EmployeeId == id);
+
+            objUsersContext.Employees.Remove(_objEmployees);
+            objUsersContext.SaveChanges();
+
+            return RedirectToAction("GetEmployee");
+        }
+
+        public ActionResult Details(int id)
+        {
+            EmployeeModel objEmployees = objUsersContext.Employees.Single(p => p.EmployeeId == id);
+
+            if (objEmployees == null)
+            {
+                return HttpNotFound();
+            }
+
+            return View(objEmployees);
+        }
+    }
+
+}
